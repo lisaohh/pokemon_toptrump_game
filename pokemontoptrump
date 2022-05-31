@@ -1,0 +1,76 @@
+import requests
+import random
+
+
+game = 0
+player_score = 0
+npc_score = 0
+
+
+def random_pokemon():
+    pokemon_id = random.randint(1, 151)
+    api = 'https://pokeapi.co/api/v2/pokemon/{}/'.format(pokemon_id)
+    response = requests.get(api)
+    pokemon = response.json()
+
+    return {
+        'name': pokemon['name'],
+        'id': pokemon['id'],
+        'height': pokemon['height'],
+        'weight': pokemon['weight'],
+    }
+
+
+def run():
+    global player_score
+    global npc_score
+    player_card = random_pokemon()
+    stat_choice = input("Which stat do you want to use? (id, height, weight)")
+    if stat_choice.lower() not in ["id", "height", "weight"]:
+        stat_choice = input("Error: Invalid option.\nWhich stat do you want to use? (id, height, weight)")
+
+    print(f"\nYou got {player_card['name']}")
+
+    npc_card = random_pokemon()
+
+    print(f"Your opponent chose {npc_card['name']}")
+
+    player_stat = player_card[stat_choice]
+    npc_stat = npc_card[stat_choice]
+
+    if player_stat > npc_stat:
+        player_score += 1
+        print("Pika Pika! You win! I chose you!\n")
+    elif player_stat < npc_stat:
+        npc_score += 1
+        print("You Lost! Your Pokemon fainted! Head to the nearest Pokemon Center!\n")
+    else:
+        print("Its a stand off! Team Rocket is blasting off again!\n")
+
+
+while game < 3:
+    run()
+    game += 1
+
+
+print(f"Player Score: {player_score}!\nOpponent Score: {npc_score}!")
+if player_score > npc_score:
+    print("You Win!")
+elif player_score == 3:
+    print("Gotta catch 'em all! You won by a landslide!")
+elif player_score == 0:
+    print("Sad Pikachu, you didn't win a single game!")
+elif player_score < npc_score:
+    print("You Lost!")
+elif player_score == npc_score:
+    print("How underwhelming! You drew with your opponent!")
+
+rematch = input("I challenge you to a rematch, do you accept?(yes/no) ")
+if rematch.lower() == "no":
+    print("Game Over! Thanks for playing!")
+    exit()
+if rematch.lower() == "yes":
+    run()
+if rematch.lower() not in ["yes", "no"]:
+    print("\nSorry, I didn't quite catch that!\n")
+    rematch = input("\nI challenge you to one more round, do you accept?(yes/no) ")
